@@ -1,0 +1,23 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+
+#hed {
+    background-color: aqua;
+    height: 50px;
+}
+
+.book {
+    height: 150px;
+    width: 120px;
+    background-color: brown;
+    margin: 10px;
+
+}
+
+#b_tana {
+    display: flex;
+    justify-content: start;
+}

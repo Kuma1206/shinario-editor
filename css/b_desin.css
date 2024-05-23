@@ -1,0 +1,36 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+}
+
+#hed {
+    width: 100%;
+    height: 50px;
+    background-color: aqua;
+}
+
+#main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.book {
+    height: 400px;
+    width: 300px;
+    background-color: aqua;
+}
+
+.task {
+    margin: 30px;
+}
