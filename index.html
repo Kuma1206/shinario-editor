@@ -12,7 +12,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://kit.fontawesome.com/f8d91bc05f.js" crossorigin="anonymous"></script>
 </head>
-<body id="">
+<id="">
 
     <header id="head">
 
@@ -39,12 +39,16 @@
                 <p id="serihu" class="h-text">セリフ</p>
                     <div class="menu" id="menu">
                         <div>
-                            <p>登場人物名追加</p>
-                            <p class="b-men">
-                                <span class="pencil-icon">▼</span>
-                                <span class="editable-text">テスト</span>
-                            </p>
-                            <p>テスト</p>
+                            <div class="b-tojo"> 
+                                <p>登場人物名追加</p>
+                                <p class="j-tuika">＋</p>
+                            </div>
+                            <div class="b-men-tuika">
+                                <p class="b-men" style="display: none;">
+                                    <span class="pencil-icon">▼</span>
+                                    <span class="editable-text"></span>
+                                </p>
+                            </div>
                         </div>
                     </div>
             <!-- </div> -->
@@ -108,23 +112,18 @@
 </main>
 
 
-</body>
-
-
-
 
 <script>
 
     // jQueryを使って編集可能なテキストにする
-    $(document).ready(function () {
-        $('.pencil-icon').click(function () {
-            var textElement = $(this).next('.editable-text');
-            textElement.attr('contenteditable', 'true').focus().addClass('editing');
 
-            // フォーカスが外れたら編集を終了
-            textElement.blur(function () {
-                $(this).attr('contenteditable', 'false').removeClass('editing');
-            });
+    $('.pencil-icon').click(function () {
+        var textElement = $(this).next('.editable-text');
+        textElement.attr('contenteditable', 'true').focus().addClass('editing');
+
+        // フォーカスが外れたら編集を終了
+        textElement.blur(function () {
+            $(this).attr('contenteditable', 'false').removeClass('editing');
         });
     });
 
@@ -149,39 +148,38 @@
     });   
 
 
-        $(document).ready(function () {
-            // 選択されたオプションのキーを定義
-            const selectedGyoKey = 'selectedGyo';
-            const selectedMojiKey = 'selectedMoji';
+    // 選択されたオプションのキーを定義
+    const selectedGyoKey = 'selectedGyo';
+    const selectedMojiKey = 'selectedMoji';
 
-            // ページが読み込まれたときに実行される処理
-            $(window).on('load', function () {
-                // ローカルストレージから選択されたオプションを取得
-                const selectedGyo = localStorage.getItem(selectedGyoKey);
-                const selectedMoji = localStorage.getItem(selectedMojiKey);
+    // ページが読み込まれたときに実行される処理
+    $(window).on('load', function () {
+        // ローカルストレージから選択されたオプションを取得
+        const selectedGyo = localStorage.getItem(selectedGyoKey);
+        const selectedMoji = localStorage.getItem(selectedMojiKey);
 
-                // 選択されたオプションを適用
-                if (selectedGyo) {
-                    $('#gyo').val(selectedGyo);
-                }
-                if (selectedMoji) {
-                    $('#moji').val(selectedMoji);
-                }
+        // 選択されたオプションを適用
+        if (selectedGyo) {
+            $('#gyo').val(selectedGyo);
+        }
+        if (selectedMoji) {
+            $('#moji').val(selectedMoji);
+        }
 
-                // オプションが変更されたときに実行される処理
-                $('#gyo').on('change', function () {
-                    // 選択されたオプションを取得してローカルストレージに保存
-                    const selectedValue = $(this).val();
-                    localStorage.setItem(selectedGyoKey, selectedValue);
-                });
-
-                $('#moji').on('change', function () {
-                    // 選択されたオプションを取得してローカルストレージに保存
-                    const selectedValue = $(this).val();
-                    localStorage.setItem(selectedMojiKey, selectedValue);
-                });
-            });
+        // オプションが変更されたときに実行される処理
+        $('#gyo').on('change', function () {
+            // 選択されたオプションを取得してローカルストレージに保存
+            const selectedValue = $(this).val();
+            localStorage.setItem(selectedGyoKey, selectedValue);
         });
+
+        $('#moji').on('change', function () {
+            // 選択されたオプションを取得してローカルストレージに保存
+            const selectedValue = $(this).val();
+            localStorage.setItem(selectedMojiKey, selectedValue);
+        });
+    });
+    
 
 
         function downloadWord() {
@@ -217,8 +215,6 @@
         $("#gyo").html(gyo);
         $("#moji").html(moji);
 
-
-    $(document).ready(function () {
 
         // 初期値の設定
         let selectedGyo = parseInt($("#gyo").val());
@@ -277,6 +273,8 @@
                 }
             }
         }
+
+
 
         function createNewTextarea(text) {
             // 新しいtextareaを作成
@@ -419,20 +417,19 @@
 
 
 
-        $(document).ready(function () {
-            $(".n-title").click(function () {
-                 bBoxCounter = 1;
-                // すべてのテキストエリアと view を非表示にする
-                $(".t-area").remove();
-                $(".view").remove();
+        $(".n-title").click(function () {
+            bBoxCounter = 1;
+            // すべてのテキストエリアと view を非表示にする
+            $(".t-area").remove();
+            $(".view").remove();
 
-                // v-boxIDをリセット
-                $("#v-box").empty();
+            // v-boxIDをリセット
+            $("#v-box").empty();
 
-                // 新しい空のテキストエリアを作成し、最初のテキストエリアとして表示する
-                createNewTextarea('');
-            });
+            // 新しい空のテキストエリアを作成し、最初のテキストエリアとして表示する
+            createNewTextarea('');
         });
+
 
         function createNewTextarea(text) {
             // 新しいtextareaを作成
@@ -475,6 +472,33 @@
                 }
 
                 $("#view" + $newTextarea.attr("id").substr(4)).text($(this).val());
+
+                $(document).on("keydown", "textarea", function (e) {
+                    if (e.which === 37) { // 左矢印キーの場合
+                        // カーソルがテキストの最後にある場合は、直後のtextareaにフォーカスを移動します
+                        if (this.selectionEnd === this.value.length) {
+                            let $nextTextarea = $(this).nextAll("textarea:first");
+                            if ($nextTextarea.length > 0) {
+                                $nextTextarea.addClass("focused");
+                                $nextTextarea.focus();
+                                e.preventDefault(); // デフォルトの動作を防止
+                            }
+                        }
+                    }
+                    if (e.which === 39) { // 右矢印キーの場合
+                        // カーソルがテキストの先頭にある場合は、直前のtextareaにフォーカスを移動します
+                        if (this.selectionStart === 0) {
+                            let $prevTextarea = $(this).prevAll("textarea:first");
+                            if ($prevTextarea.length > 0) {
+                                $prevTextarea.addClass("focused");
+                                $prevTextarea.focus();
+                                e.preventDefault(); // デフォルトの動作を防止
+                            }
+                        }
+                    }
+                });
+
+
             });
 
             // 新しいviewを作成
@@ -549,7 +573,7 @@
 
 
         
-        $(document).ready(function () {
+    
             // 保存ボタンがクリックされた時の処理
             $("#save").on("click", function () {
                 let currentTitle = $(".save-title").data("currentTitle");
@@ -575,6 +599,8 @@
                     alert("タイトルを入力してください。");
                 }
             });
+
+
 
             // タイトルリンクがクリックされた時の処理
             $(document).on("click", ".load-title", function (e) {
@@ -628,7 +654,6 @@
                 localStorage.setItem(title, JSON.stringify(dataToSave));
                 $(".save-title").data("currentTitle", title); // 現在のタイトルを保存
             }
-        });
 
 
         // 初回実行
@@ -660,45 +685,113 @@
             updateView($(this));
             updateLocalStorage($(this));
         });
-    });
 
 
         // // 初回実行
         // applyLocalStorageValues();
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            // 最初のテキストエリアに対するイベントハンドラを追加
-            $("#text1").on("input", function () {
-                let text = $(this).val();
-                let charCount = text.replace(/\n/g, '').length;
-                let lines = text.split("\n");
-                let lineCount = lines.length;
-                $("#charCount").text("文字数: " + charCount);
-                $("#lineCount").text("行数: " + lineCount);
-                for (let i = 0; i < lines.length; i++) {
-                    if (lines[i].length > selectedMoji) {
-                        lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
-                    }
-                }
-                if (lineCount > selectedGyo) {
-                    lines = lines.slice(0, selectedGyo);
-                }
+        // 初期値の設定
+        let selectedGyo = parseInt($("#gyo").val());
+        let selectedMoji = parseInt($("#moji").val());
+        let bBoxCounter = 2; // 最初のtextareaの数を設定
 
-                $(this).val(lines.join("\n"));
+        // ページが読み込まれたときに実行する処理
+        function applySelectedValuesFromLocalStorage() {
+            // ローカルストレージから選択された値を取得
+            const storedGyo = localStorage.getItem("selectedGyo");
+            const storedMoji = localStorage.getItem("selectedMoji");
 
-                if (lineCount > selectedGyo) {
-                    createNewTextarea('');
-                }
+            // 取得した値があれば適用
+            if (storedGyo !== null) {
+                selectedGyo = parseInt(storedGyo);
+                $("#gyo").val(storedGyo);
+            }
+            if (storedMoji !== null) {
+                selectedMoji = parseInt(storedMoji);
+                $("#moji").val(storedMoji);
+            }
+        }
 
-                updateView($(this));
-                updateLocalStorage($(this));
-            });
+        // 初回実行
+        applySelectedValuesFromLocalStorage();
+
+        // 行数と文字数の選択ボックスから選択された値を取得
+        $("#gyo").on("change", function () {
+            selectedGyo = parseInt($(this).val()); // 選択された行数を整数に変換して変数に代入
+            localStorage.setItem("selectedGyo", selectedGyo); // 選択された値をローカルストレージに保存
         });
 
+        $("#moji").on("change", function () {
+            selectedMoji = parseInt($(this).val()); // 選択された文字数を整数に変換して変数に代入
+            localStorage.setItem("selectedMoji", selectedMoji); // 選択された値をローカルストレージに保存
+        });
+
+        // テキストエリアの追加機能の実装
+        function createNewTextarea(text) {
+            // 新しいテキストエリアを作成する処理
+            // ここに実装を追加
+        }
+
+        // テキストエリアの内容を更新するための関数
+        function updateView(textarea) {
+            let text = textarea.val();
+            let lines = text.split("\n");
+            let charCount = text.replace(/\n/g, '').length;
+            let lineCount = lines.length;
+
+            // 文字数と行数を更新する
+            $("#charCount").text("文字数: " + charCount);
+            $("#lineCount").text("行数: " + lineCount);
+
+            // 選択された行数と文字数に基づいて、テキストを修正する
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].length > selectedMoji) {
+                    lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+                }
+            }
+            if (lineCount > selectedGyo) {
+                lines = lines.slice(0, selectedGyo);
+            }
+
+            textarea.val(lines.join("\n"));
+        }
+
+        // 最初のテキストエリアに対するイベントハンドラを追加
+        $("#text1").on("input", function () {
+            let text = $(this).val();
+            let charCount = text.replace(/\n/g, '').length;
+            let lines = text.split("\n");
+            let lineCount = lines.length;
+            $("#charCount").text("文字数: " + charCount);
+            $("#lineCount").text("行数: " + lineCount);
+
+            // 文字数と行数に基づいて、テキストを修正する
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].length > selectedMoji) {
+                    lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+                }
+            }
+            if (lineCount > selectedGyo) {
+                lines = lines.slice(0, selectedGyo);
+            }
+
+            $(this).val(lines.join("\n"));
+
+            // 新しいテキストエリアを作成する条件を追加する
+            if (lineCount > selectedGyo) {
+                createNewTextarea('');
+            }
+
+            // テキストエリアのビューを更新する
+            updateView($(this));
+        });
+    });
 
 
-        $(document).ready(function () {
+
+
             // サイドバー内のビュー要素がクリックされた時の処理
             $('#side').on('click', '.view', function () {
                 // クリックされたビューのIDを取得
@@ -722,18 +815,16 @@
                 // スクロール位置を調整して更新
                 $('#side').scrollTop(scrollTop + scrollAmount);
             });
-        });
 
 
 
-        $(document).ready(function () {
             // 各ボタンのクリックイベントをまとめる
-            $('#hashira, #togaki, #serihu, #flash, #keika, #kaiso, #NA').click(function () {
-                // フォーカスしているテキストエリアを取得
-                let $textArea = $('textarea.focused');
+            $(document).on('click', '#hashira, #togaki, #flash, #keika, #kaiso, #NA', function () {
+                let $focusedTextArea = $('textarea.focused');
 
-                // テキストエリアが存在し、フォーカスしている場合にのみ挿入処理を実行
-                if ($textArea.length > 0) {
+                // フォーカスされたテキストエリアが存在するか確認
+                if ($focusedTextArea.length > 0) {
+                    let $textArea = $focusedTextArea.eq(0); // フォーカスされた最初のテキストエリアを取得
                     let startPos = $textArea[0].selectionStart; // カーソルの開始位置を取得
                     let endPos = $textArea[0].selectionEnd; // カーソルの終了位置を取得
                     let text = $textArea.val();
@@ -744,8 +835,6 @@
                         newText = text.substring(0, startPos) + "〇場所（時間）" + text.substring(endPos, text.length);
                     } else if ($(this).attr('id') === 'togaki') {
                         newText = text.substring(0, startPos) + "　　　" + text.substring(endPos, text.length);
-                        // } else if ($(this).attr('id') === 'serihu') {
-                        // newText = text.substring(0, startPos) + "名前「」" + text.substring(endPos, text.length);
                     } else if ($(this).attr('id') === 'flash') {
                         newText = text.substring(0, startPos) + "　　　×　　×　　×（フラッシュ）\n" + text.substring(endPos, text.length);
                     } else if ($(this).attr('id') === 'keika') {
@@ -756,25 +845,87 @@
                         newText = text.substring(0, startPos) + "〇名前NA『』" + text.substring(endPos, text.length);
                     }
 
-
                     // 文字列を挿入
                     $textArea.val(newText);
 
                     // テキストエリアにフォーカスを戻す
                     $textArea[0].focus();
+
                 }
             });
-        });
 
-
-        $(document).ready(function () {
-            $('#serihu').click(function () {
-                $('#menu').toggle();
+            // テキストエリアがクリックされた時の処理
+            $(document).on('click', 'textarea', function () {
+                // すべてのテキストエリアからフォーカスを外す
+                $('textarea').removeClass('focused');
+                // クリックされたテキストエリアにフォーカスを設定する
+                $(this).addClass('focused');
             });
+
+
+
+        // セリフをクリックしたときの処理
+        $('#serihu').click(function () {
+            // メニューの表示を切り替える
+            $('#menu').toggle();
+        });
+
+        // #main をクリックしたときの処理
+        $('#main').on('click', function (event) {
+            if (!$(event.target).closest('#menu').length) {
+                // メニュー以外をクリックした場合、メニューを非表示にする
+                $('.menu').hide();
+            }
         });
 
 
+
+    // editable-text をクリックしたときの処理
+    $(document).on('click', '.editable-text', function () {
+        // 編集可能にする
+        $(this).attr('contenteditable', 'true');
+        $(this).focus();
+    });
+
+
+    
+    $(document).on('click', '.pencil-icon', function () {
+        // editable-text に入力された文字列を取得
+        let insertText = $(this).siblings('.editable-text').text();
+        // フォーカスされたテキストエリアに挿入する
+        let $focusedTextArea = $('textarea.focused');
+        if ($focusedTextArea.length > 0) {
+            let $textArea = $focusedTextArea.eq(0); // フォーカスされた最初のテキストエリアを取得
+            let startPos = $textArea[0].selectionStart; // カーソルの開始位置を取得
+            let endPos = $textArea[0].selectionEnd; // カーソルの終了位置を取得
+            let text = $textArea.val();
+            let newText = text.substring(0, startPos) + insertText + text.substring(endPos, text.length);
+
+            // 文字列を挿入
+            $textArea.val(newText);
+
+            // テキストエリアにフォーカスを戻す
+            $textArea[0].focus();
+        }
+    });
+
+     // j-tuika をクリックしたときの処理
+        $('.j-tuika').click(function () {
+            // 新しい b-men 要素を作成
+            var $newBmen = $('<p class="b-men">' +
+                '<span class="pencil-icon">▼</span>' +
+                '<span class="editable-text">〇名前・場所（時刻）</span>' +
+                '</p>');
+
+            // b-tojo の直後に追加する
+            $('.b-tojo').after($newBmen);
+        });
+
+
+        
     </script>
 
+
+</body>
 
 </html>

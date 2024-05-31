@@ -129,6 +129,9 @@
 
 
 .menu {
+    /* display: flex;
+    justify-content: center;
+    flex-direction: column; */
     display: none;
     font-size: 13px;
     top: 27px;
@@ -139,36 +142,73 @@
     border: 2px solid #ccc;
     border-radius: 7px;
     position:fixed;
-    width: 10%;
+    width: 15%;
     z-index: 99999;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
-.b-men {
+.b-tojo {
     display: flex;
-    justify-content: center;
-    align-content: center;
 }
 
-/* 鉛筆アイコンのスタイル */
+.j-tuika {
+    padding-left: 4px;
+    cursor: pointer;
+}
+
+.b-men-tuika {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.b-men {
+    display: flex;
+    justify-content: start;
+    align-content: center;  
+}
+
+.pencil-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 3px;
+    cursor: pointer;
+}
+
+/* 鉛筆アイコンのスタイル
 .pencil-icon::before {
     content: "\270E";
     font-size: 13px;
     color: #333;
     margin-right: 1px;
     cursor: pointer;
-}
+} */
 
 /* テキストのスタイル */
 .editable-text {
+    position: relative;
     display: inline-block;
     cursor: text;
     padding: 2px;
-    width: 100px;
+    width: 100%;
     border: 1px solid transparent;
 }
+/* 
+.editable-text::before {
+    content: "背景文字";
+    position: absolute;
+    /* transform: translateY(0%); */
+    /* color: #aaa; */
+    /* 背景文字の色 */
+    /* font-size: 12px; */
+    /* フォントサイズ */
+    /* pointer-events: none; */
+    /* クリックイベントを無視 */
+/* } */ 
 
 .editable-text.editing {
+    width: 100%;
     border-color: #faf5f5;
     border-width: 0;
     background-color: #bbb7b7;
@@ -242,6 +282,10 @@
     background-color: #fff;
     writing-mode: vertical-rl;
     z-index: 0;
+}
+
+.view:hover {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.767);
 }
 
 #side1 {
