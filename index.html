@@ -91,7 +91,7 @@
 
     <!-- <section id="t-room"> -->
         <div id="t-box">
-            <textarea id="text1" cols="54" rows="30" wrap="soft" class="t-area"></textarea>
+            <textarea id="text1" cols="54" rows="30" wrap="soft" class="t-area focused"></textarea>
             <!-- <textarea id="text2" cols="54" rows="30" wrap="soft" class="t-area" style="display: none;"></textarea> -->
         </div>
     <!-- </section> -->
@@ -850,29 +850,47 @@
                 }
             });
 
-            // テキストエリアがクリックされた時の処理
-            $(document).on('click', 'textarea', function () {
-                // すべてのテキストエリアからフォーカスを外す
-                $('textarea').removeClass('focused');
-                // クリックされたテキストエリアにフォーカスを設定する
-                $(this).addClass('focused');
-            });
+    $('textarea').on('focus', function() {
+        $('textarea').removeClass('focused');
+        $(this).addClass('focused');
+    });
 
 
 
         // セリフをクリックしたときの処理
         $('#serihu').click(function () {
+            // 現在フォーカスされているテキストエリアを保存
+            let $focusedTextArea = $('textarea.focused');
+
             // メニューの表示を切り替える
             $('#menu').toggle();
-        });
 
-        // #main をクリックしたときの処理
-        $('#main').on('click', function (event) {
-            if (!$(event.target).closest('#menu').length) {
-                // メニュー以外をクリックした場合、メニューを非表示にする
-                $('.menu').hide();
+            // メニューの表示を切り替えた後にフォーカスを戻す
+            if ($focusedTextArea.length > 0) {
+                $focusedTextArea.focus();
             }
         });
+
+// #main をクリックしたときの処理
+$('#main').on('click', function (event) {
+    // 現在フォーカスされているテキストエリアを保存
+    let $focusedTextArea = $('textarea.focused');
+    let startPos = $focusedTextArea.length ? $focusedTextArea[0].selectionStart : null;
+    let endPos = $focusedTextArea.length ? $focusedTextArea[0].selectionEnd : null;
+
+    if (!$(event.target).closest('#menu').length) {
+        // メニュー以外をクリックした場合、メニューを非表示にする
+        $('#menu').hide();
+
+        // メニューを非表示にした後にフォーカスを戻す
+        if ($focusedTextArea.length > 0) {
+            $focusedTextArea.focus();
+            if (startPos !== null && endPos !== null) {
+                $focusedTextArea[0].setSelectionRange(startPos, endPos);
+            }
+        }
+    }
+});
 
 
 
@@ -887,7 +905,7 @@
     
     $(document).on('click', '.pencil-icon', function () {
         // editable-text に入力された文字列を取得
-        let insertText = $(this).siblings('.editable-text').text();
+        let insertText = $(this).siblings('.editable-text').val();
         // フォーカスされたテキストエリアに挿入する
         let $focusedTextArea = $('textarea.focused');
         if ($focusedTextArea.length > 0) {
@@ -910,8 +928,7 @@
             // 新しい b-men 要素を作成
             var $newBmen = $('<p class="b-men">' +
                 '<span class="pencil-icon">▼</span>' +
-                '<input class="editable-text" placeholder="〇名前・場所（時刻）"></input>' +
-                '</p>');
+                '<input class="editable-text" placeholder="〇名前・場所（時刻）"></input>' + '</p>');
 
             // b-tojo の直後に追加する
             $('.b-tojo').after($newBmen);
