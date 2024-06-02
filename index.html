@@ -814,6 +814,14 @@
 
 
 
+    // すべてのテキストエリアにフォーカスイベントを追加
+    $(document).on('focus', 'textarea', function() {
+        // フォーカスされたテキストエリアに 'focused' クラスを追加
+        $('textarea').removeClass('focused');
+        $(this).addClass('focused');
+        $focusedTextArea = $(this); // フォーカスされたテキストエリアをグローバル変数に設定
+    });
+
             // 各ボタンのクリックイベントをまとめる
             $(document).on('click', '#hashira, #togaki, #flash, #keika, #kaiso, #NA', function () {
                 let $focusedTextArea = $('textarea.focused');
@@ -850,59 +858,27 @@
                 }
             });
 
-    $('textarea').on('focus', function() {
-        $('textarea').removeClass('focused');
-        $(this).addClass('focused');
-    });
-
-
 
         // セリフをクリックしたときの処理
         $('#serihu').click(function () {
-            // 現在フォーカスされているテキストエリアを保存
-            let $focusedTextArea = $('textarea.focused');
-
             // メニューの表示を切り替える
             $('#menu').toggle();
-
             // メニューの表示を切り替えた後にフォーカスを戻す
             if ($focusedTextArea.length > 0) {
                 $focusedTextArea.focus();
             }
         });
 
-// #main をクリックしたときの処理
-$('#main').on('click', function (event) {
-    // 現在フォーカスされているテキストエリアを保存
-    let $focusedTextArea = $('textarea.focused');
-    let startPos = $focusedTextArea.length ? $focusedTextArea[0].selectionStart : null;
-    let endPos = $focusedTextArea.length ? $focusedTextArea[0].selectionEnd : null;
-
-    if (!$(event.target).closest('#menu').length) {
-        // メニュー以外をクリックした場合、メニューを非表示にする
-        $('#menu').hide();
-
-        // メニューを非表示にした後にフォーカスを戻す
-        if ($focusedTextArea.length > 0) {
-            $focusedTextArea.focus();
-            if (startPos !== null && endPos !== null) {
-                $focusedTextArea[0].setSelectionRange(startPos, endPos);
+        // #main をクリックしたときの処理
+        $('#main').on('click', function (event) {
+            if (!$(event.target).closest('#menu').length) {
+                // メニュー以外をクリックした場合、メニューを非表示にする
+                $('#menu').hide();
+                // メニューを非表示にした後にフォーカスを戻す
             }
-        }
-    }
-});
+        });
 
-
-
-    // editable-text をクリックしたときの処理
-    $(document).on('click', '.editable-text', function () {
-        // 編集可能にする
-        $(this).attr('contenteditable', 'true');
-        $(this).focus();
-    });
-
-
-    
+   
     $(document).on('click', '.pencil-icon', function () {
         // editable-text に入力された文字列を取得
         let insertText = $(this).siblings('.editable-text').val();
