@@ -539,6 +539,8 @@ body {
     width: 100%;
     border: #000;
     border-width: 10px;
+    padding-left: 0;
+    margin-left: 0;
     
 }
 
@@ -547,10 +549,25 @@ body {
 .save-title {
     display: none;
     width: 100%;
-    margin-left: 10px;
+    padding-left: 0;
+    margin-left: 0;
     /* background-color: #000; */
     /* padding-left: 10px; */
     color: #000;
+}
+
+.save-title p {
+    width: 100%;
+    padding-left: 0px;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* background-color: #000; */
+    /* padding-left: 10px; */
+    color: #000;
+}
+
+.load-title {
+    margin-left: 12px;
 }
 
 .n-title:hover {

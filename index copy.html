@@ -123,6 +123,7 @@
     }
 </script>
 
+<!-- Firebase SDK import -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
@@ -130,7 +131,7 @@
         collection,
         addDoc,
         serverTimestamp,
-        setDoc,
+        setDoc,  // ここを追加
         doc,
         getDoc,
         getDocs
@@ -138,7 +139,7 @@
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
-        apiKey: "API_KEY_HERE",
+        apiKey: "AIzaSyC4wOcc9eussYrzW-F1K_nYNE2PkqCJGZY",
         authDomain: "shinario-editor.firebaseapp.com",
         projectId: "shinario-editor",
         storageBucket: "shinario-editor.appspot.com",
@@ -150,117 +151,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let bBoxCounter = 1; // 初期値を2に設定
-
-    // テキストエリアを動的に作成する関数
-    function createNewTextarea(text = '') {
-        let $newTextarea = $("<textarea>").attr({
-            id: "text" + bBoxCounter,
-            cols: "54",
-            rows: "30",
-            wrap: "soft",
-            class: "t-area"
-        }).val(text).on('input', function () {
-            handleTextareaInput($(this));
-        });
-
-        // 新しいviewを作成
-        let $newView = $("<p>").attr({
-            id: "view" + bBoxCounter
-        }).addClass("view").text(text);
-
-        // 新しいb-boxIDを作成
-        let $newBBoxID = $("<p>").attr({
-            id: "v-boxID" + bBoxCounter
-        }).text(bBoxCounter);
-
-        // t-boxに新しいtextareaを追加
-        $("#t-box").append($newTextarea);
-
-        // v-boxに新しいviewとb-boxIDを追加
-        $("#v-box").append($newBBoxID);
-        $("#v-box").append($newView);
-
-        // 新しいtextareaの表示
-        $newTextarea.show();
-        $newTextarea.addClass("focused");
-
-        // text1のフォーカスを解除
-        $("#text1").removeClass("focused");
-
-        // 新しいtextareaにフォーカスを移動
-        $newTextarea.focus();
-
-        // 新しいtextareaでバックスペースを押した時に直前のtextareaにフォーカスを戻す処理
-        $newTextarea.on("keydown", function (e) {
-            handleBackspaceKey($(this), e);
-        });
-
-        bBoxCounter++;
-    }
-
-    function handleTextareaInput($textarea) {
-        let text = $textarea.val();
-        let charCount = text.replace(/\n/g, '').length;
-        let lines = text.split("\n");
-        let lineCount = lines.length;
-        $("#charCount").text("文字数: " + charCount);
-        $("#lineCount").text("行数: " + lineCount);
-
-        let viewText = text.replace(/\n/g, '<br>');
-        $("#view" + $textarea.attr("id").substr(4)).html(viewText);
-
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].trim().length === 0) continue;
-            if (lines[i].length > selectedMoji) {
-                lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
-            }
-        }
-
-        $textarea.val(lines.join('\n'));
-
-        if (lineCount > selectedGyo) {
-            lines = lines.slice(0, selectedGyo);
-        }
-
-        $textarea.val(lines.join("\n"));
-
-        if (lineCount > selectedGyo) {
-            createNewTextarea('');
-        }
-
-        $("#view" + $textarea.attr("id").substr(4)).text($textarea.val());
-    }
-
-    function handleBackspaceKey($textarea, e) {
-        if (e.which === 8 && $textarea.val() === "") {
-            e.preventDefault();
-            let $prevTextarea = $textarea.prevAll("textarea:first");
-            if ($prevTextarea.length > 0) {
-                $prevTextarea.addClass("focused");
-                $prevTextarea.focus();
-                $textarea.hide();
-                $textarea.removeClass("focused");
-
-                let viewID = "view" + $textarea.attr("id").substr(4);
-                $("#" + viewID).hide();
-
-                let bBoxID = "v-boxID" + $textarea.attr("id").substr(4);
-                $("#" + bBoxID).hide();
-
-                bBoxCounter--;
-                $textarea.remove();
-                $("#" + viewID).remove();
-                $("#" + bBoxID).remove();
-
-                if ($("#t-box .t-area").length <= 1) {
-                    $("#text1").addClass("focused");
-                }
-            }
-        }
-    }
-
+    // Firestore にデータを保存する関数
     async function saveData(title, textArray) {
+        // テキストエリアの内容をフィールドに分けて保存するオブジェクトを作成
         let data = {
             title: title,
             time: serverTimestamp()
@@ -269,132 +162,74 @@
             data[`text${index + 1}`] = text;
         });
 
+        // ドキュメントを作成または更新
         await setDoc(doc(collection(db, "save"), title), data);
     }
 
+    // Firestore からデータを読み込む関数
+    async function loadData(title) {
+        const docRef = doc(db, "save", title);
+        const docSnap = await getDoc(docRef);
 
-async function loadData(title) {
-    const docRef = doc(db, "save", title);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-        let textareaCount = 0;
-
-            bBoxCounter = 1;
-            // すべてのテキストエリアと view を非表示にする
-            $(".t-area").remove();
-            $(".view").remove();
-
-            // v-boxIDをリセット
-            $("#v-box").empty();
-
-            // 新しい空のテキストエリアを作成し、最初のテキストエリアとして表示する
-            createNewTextarea('');
-
-        // textフィールドの数を確認し、必要な数のテキストエリアを生成する
-        for (let key in data) {
-            if (key.startsWith("text")) {
-                textareaCount++;
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            let textareaCount = 0;
+            for (let key in data) {
+                if (key.startsWith("text")) {
+                    textareaCount++;
+                    if ($(`#${key}`).length === 0) {
+                        $("#t-box").append(`<textarea id="${key}" cols="54" rows="30" wrap="soft" class="t-area"></textarea>`);
+                    }
+                    $(`#${key}`).val(data[key]); // 対応するテキストエリアに復元する
+                }
             }
+            alert("データを復元しました");
+        } else {
+            alert("復元したデータが見つかりません");
         }
-
-        // 必要な数のテキストエリアを生成
-        for (let i = 1; i <= textareaCount; i++) {
-            if ($(`#text${i}`).length === 0) {
-                createNewTextarea("");
-            }
-        }
-
-        // データを復元
-        for (let key in data) {
-            if (key.startsWith("text")) {
-                $(`#${key}`).val(data[key]);
-                $(`#view${key.substr(4)}`).html(data[key].replace(/\n/g, '<br>'));
-            }
-        }
-
-    // 空白のテキストエリアと対応するビュー、v-boxIDを削除する
-    $(".t-area").each(function() {
-        if ($(this).val().trim() === '') {
-            const textareaID = $(this).attr('id');
-            $(this).remove();
-            $(`#view${textareaID.substr(4)}`).remove();
-            $(`#v-boxID${textareaID.substr(4)}`).remove(); // v-boxIDを削除
-        }
-    });
-
-        
-        // テキストエリアカウンターを更新
-        if (textareaCount >= bBoxCounter) {
-            bBoxCounter = textareaCount + 1;
-        }
-
-        alert("データを復元しました");
-    } else {
-        alert("復元したデータが見つかりません");
     }
-}
 
-
-$(document).on("click", ".load-title", async function () {
-    let title = $(this).data("title");
-
-            bBoxCounter = 1;
-            // すべてのテキストエリアと view を非表示にする
-            $(".t-area").remove();
-            $(".view").remove();
-
-            // v-boxIDをリセット
-            $("#v-box").empty();
-
-            // 新しい空のテキストエリアを作成し、最初のテキストエリアとして表示する
-            createNewTextarea('');    
-
-    // 新たにデータを復元する
-    await loadData(title);
-
-    // 空白のテキストエリアと対応するビュー、v-boxIDを削除する
-    $(".t-area").each(function() {
-        if ($(this).val().trim() === '') {
-            const textareaID = $(this).attr('id');
-            $(this).remove();
-            $(`#view${textareaID.substr(4)}`).remove();
-            $(`#v-boxID${textareaID.substr(4)}`).remove(); // v-boxIDを削除
-        }
-    });
-
-        
-});
-
+    // DOM の準備ができたら実行
     $(document).ready(function() {
+        // 保存ボタンのクリックイベント
         $("#save").on("click", async function () {
             let title = prompt("タイトルを入力してください:");
+
             if (title) {
                 let textArray = [];
+
+                // 全てのテキストエリアの内容を配列に格納する
                 $(".t-area").each(function(index, element) {
                     let text = $(element).val();
                     textArray.push(text);
                 });
 
+                // データを保存する
                 await saveData(title, textArray);
 
                 alert("保存しました");
 
+                // 保存したタイトルを表示する
                 $(".save-title").append('<div><a href="#" class="load-title" data-title="' + title + '">' + title + '</a></div>');
             } else {
                 alert("タイトルを入力してください。");
             }
         });
 
+        // タイトルのクリックイベント
+        $(document).on("click", ".load-title", async function () {
+            let title = $(this).data("title");
+            await loadData(title);
+        });
 
+        // ページが読み込まれた時に保存されたタイトルを表示する
         async function loadTitles() {
-            const querySnapshot = await getDocs(collection(db, "save"));
-            const titles = new Set();
+            const querySnapshot = await getDocs(collection(db, "save")); // コレクション名 "save" を指定
+            const titles = new Set(); // 重複を防ぐためにセットを使用
 
             querySnapshot.forEach(doc => {
                 const docData = doc.data();
-                titles.add(docData.title);
+                titles.add(docData.title); // タイトルをセットに追加
             });
 
             titles.forEach(title => {
@@ -402,33 +237,9 @@ $(document).on("click", ".load-title", async function () {
             });
         }
 
-        loadTitles();
-    });
-
-    $(document).on("keydown", "textarea", function (e) {
-        if (e.which === 37) {
-            if (this.selectionEnd === this.value.length) {
-                let $nextTextarea = $(this).nextAll("textarea:first");
-                if ($nextTextarea.length > 0) {
-                    $nextTextarea.addClass("focused");
-                    $nextTextarea.focus();
-                    e.preventDefault();
-                }
-            }
-        }
-        if (e.which === 39) {
-            if (this.selectionStart === 0) {
-                let $prevTextarea = $(this).prevAll("textarea:first");
-                if ($prevTextarea.length > 0) {
-                    $prevTextarea.addClass("focused");
-                    $prevTextarea.focus();
-                    e.preventDefault();
-                }
-            }
-        }
+        loadTitles(); // タイトルを読み込む関数を呼び出す
     });
 </script>
-
 
 
 <script>
@@ -504,7 +315,6 @@ $(document).on("click", ".load-title", async function () {
     });
     
 
-        let bBoxCounter = 2; // 最初のtextareaの数を設定
 
         function downloadWord() {
             // テキストエリアの内容を取得
@@ -543,6 +353,7 @@ $(document).on("click", ".load-title", async function () {
         // 初期値の設定
         let selectedGyo = parseInt($("#gyo").val());
         let selectedMoji = parseInt($("#moji").val());
+        let bBoxCounter = 2; // 最初のtextareaの数を設定
 
         // ページが読み込まれたときに実行する処理
         function applySelectedValuesFromLocalStorage() {
@@ -575,6 +386,169 @@ $(document).on("click", ".load-title", async function () {
             localStorage.setItem("selectedMoji", selectedMoji); // 選択された値をローカルストレージに保存
         });
 
+        // // ローカルストレージの値を適用する関数
+        // function applyLocalStorageValues() {
+        //     const storedTextAreas = localStorage.getItem("textAreas");
+        //     if (storedTextAreas) {
+        //         try {
+        //             const textAreas = JSON.parse(storedTextAreas);
+        //             textAreas.forEach(textArea => {
+        //                 // 既存のテキストエリアが存在する場合は更新、存在しない場合は新しいテキストエリアを作成
+        //                 const $existingTextarea = $("#" + textArea.id);
+        //                 if ($existingTextarea.length > 0) {
+        //                     $existingTextarea.val(textArea.value);
+        //                     updateView($existingTextarea); // 対応する view を更新
+        //                 } else {
+        //                     createNewTextarea(textArea.value, textArea.id); // 新しいテキストエリアを作成
+        //                 }
+        //             });
+        //         } catch (e) {
+        //             console.error("Failed to parse stored text areas:", e);
+        //         }
+        //     }
+        // }
+
+
+
+        function createNewTextarea(text) {
+            // 新しいtextareaを作成
+            let $newTextarea = $("<textarea>").attr({
+                id: "text" + bBoxCounter,
+                cols: "54",
+                rows: "30",
+                wrap: "soft",
+                class: "t-area"
+            }).val(text).on('input', function () {
+                let text = $(this).val();
+                // 改行文字を削除してから文字数をカウント
+                let charCount = text.replace(/\n/g, '').length;
+                let lines = text.split("\n");
+                let lineCount = lines.length; // 行数を計算
+                $("#charCount").text("文字数: " + charCount); // 文字数を表示
+                $("#lineCount").text("行数: " + lineCount); // 行数を表示
+
+                // viewに改行を反映するため、改行文字を<br>に変換
+                let viewText = text.replace(/\n/g, '<br>');
+                $("#view" + $newTextarea.attr("id").substr(4)).html(viewText);
+
+                for (var i = 0; i < lines.length; i++) {
+                    if (lines[i].trim().length === 0) {
+                        continue;
+                    }
+                    if (lines[i].length > selectedMoji) {
+                    // 選択された文字数を超える場合
+                        // その位置に改行を挿入
+                        lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+                    }
+                }
+                $(this).val(lines.join('\n'));
+
+                // 行数が最大の行数を超える場合、超えた部分を削除する
+                if (lineCount > selectedGyo) {
+                    lines = lines.slice(0, selectedGyo); // 最大の行数までの行だけを残す
+                }
+
+                $(this).val(lines.join("\n")); // 文字数制限を適用したテキストを再度設定
+
+                // 行数が制限を超えた場合、新しいtextareaを作成する
+                if (lineCount > selectedGyo) {
+                    createNewTextarea('');
+                }
+
+                // 対応するviewに反映
+                $("#view" + $newTextarea.attr("id").substr(4)).text($(this).val());
+            });
+
+            // 新しいviewを作成
+            let $newView = $("<p>").attr({
+                id: "view" + bBoxCounter // 動的にidを設定します
+            }).addClass("view").text(text);
+
+            // 新しいb-boxIDを作成
+            let $newBBoxID = $("<p>").attr({
+                id: "v-boxID" + bBoxCounter // 動的にidを設定します
+            }).text(bBoxCounter);
+
+            // t-boxに新しいtextareaを追加
+            $("#t-box").append($newTextarea);
+
+            // v-boxに新しいviewとb-boxIDを追加
+            $("#v-box").append($newBBoxID);
+            $("#v-box").append($newView);
+
+            // 新しいtextareaの表示
+            $newTextarea.show();
+            $newTextarea.addClass("focused");
+
+            // text1のフォーカスを解除
+            $("#text1").removeClass("focused");
+
+            // 新しいtextareaにフォーカスを移動
+            $newTextarea.focus();
+
+            // 新しいtextareaでバックスペースを押した時に直前のtextareaにフォーカスを戻す処理
+            $newTextarea.on("keydown", function (e) {
+                if (e.which === 8 && $(this).val() === "") {
+                    e.preventDefault();
+                    let $prevTextarea = $(this).prevAll("textarea:first");
+                    if ($prevTextarea.length > 0) {
+                        $prevTextarea.addClass("focused");
+                        $prevTextarea.focus();
+                        // このtextareaを非表示にする
+                        $(this).hide();
+                        $(this).removeClass("focused");
+
+                        // 対応するviewも非表示にする
+                        $newView.hide();
+                        $newBBoxID.hide();
+
+                        // b-boxIDの数値を減算する
+                        bBoxCounter--;
+
+                        // 新しいtextareaとviewを削除する
+                        $(this).remove();
+                        $newView.remove();
+
+                        // b-boxIDも削除する
+                        $newBBoxID.remove();
+
+                        // テキストエリアの数が1つ以下になった場合、text1にフォーカスを戻す
+                        if ($("#t-box .t-area").length <= 1) {
+                            $("#text1").addClass("focused");
+                        }
+                    }
+                }
+            });
+
+            // b-boxIDの数値をインクリメント
+            bBoxCounter++;
+        }
+
+        // 対応するviewを更新する関数
+        function updateView($textarea) {
+            let text = $textarea.val();
+            let lines = text.split("\n");
+            let viewText = lines.slice(0, selectedGyo).join("\n");
+            let $view = $("#view" + $textarea.attr("id").substr(4));
+            $view.text(viewText);
+        }
+
+        // ローカルストレージに更新内容を保存する関数
+        function updateLocalStorage($textarea) {
+            let textAreaId = $textarea.attr("id");
+            let text = $textarea.val();
+            let storedTextAreas = JSON.parse(localStorage.getItem("textAreas")) || [];
+            let index = storedTextAreas.findIndex(ta => ta.id === textAreaId);
+
+            if (index > -1) {
+                storedTextAreas[index].value = text;
+            } else {
+                storedTextAreas.push({ id: textAreaId, value: text });
+            }
+
+            localStorage.setItem("textAreas", JSON.stringify(storedTextAreas));
+        }
+
 
 
         $(".n-title").click(function () {
@@ -592,7 +566,6 @@ $(document).on("click", ".load-title", async function () {
 
 
         function createNewTextarea(text) {
-            // let bBoxCounter = 2; 
             // 新しいtextareaを作成
             let $newTextarea = $("<textarea>").attr({
                 id: "text" + bBoxCounter,
@@ -713,6 +686,107 @@ $(document).on("click", ".load-title", async function () {
 
 
 
+        // // 保存されたタイトルをロードして表示する処理
+        // for (let i = 0; i < localStorage.length; i++) {
+        //     let key = localStorage.key(i);
+        //     try {
+        //         let data = JSON.parse(localStorage.getItem(key));
+        //         if (data && data.title) {
+        //             $(".save-title").append('<div><a href="#" class="load-title" data-title="' + data.title + '">' + data.title + '</a></div>');
+        //         }
+        //     } catch (e) {
+        //         console.error("Failed to parse saved data:", e);
+        //     }
+        // }
+
+
+        
+    
+            // // 保存ボタンがクリックされた時の処理
+            // $("#save").on("click", function () {
+            //     let currentTitle = $(".save-title").data("currentTitle");
+            //     let title = prompt("保存するタイトルを入力してください:", currentTitle ? currentTitle : "");
+
+            //     if (title) {
+            //         if (localStorage.getItem(title) && title !== currentTitle) {
+            //             if (confirm("このタイトルは既に存在します。上書き保存しますか？")) {
+            //                 saveData(title);
+            //                 alert("上書き保存しました");
+            //             } else {
+            //                 alert("上書き保存をキャンセルしました");
+            //             }
+            //         } else {
+            //             saveData(title);
+            //             alert("保存しました");
+            //             // 新規保存の場合のみタイトルをリンクとして追加
+            //             if (title !== currentTitle) {
+            //                 $(".save-title").append('<div><a href="#" class="load-title" data-title="' + title + '">' + title + '</a></div>');
+            //             }
+            //         }
+            //     } else {
+            //         alert("タイトルを入力してください。");
+            //     }
+            // });
+
+
+
+            // // タイトルリンクがクリックされた時の処理
+            // $(document).on("click", ".load-title", function (e) {
+            //     e.preventDefault();
+            //     let title = $(this).data("title");
+            //     let savedData = localStorage.getItem(title);
+
+            //     if (savedData) {
+            //         try {
+            //             let parsedData = JSON.parse(savedData);
+            //             let textAreas = parsedData.textAreas;
+
+            //             // v-box内の要素をクリア
+            //             $("#v-box").empty();
+            //             $(".t-area").remove();
+
+            //             // bBoxCounterをリセット
+            //             bBoxCounter = 1;
+
+            //             // 保存されたテキストエリアを復元
+            //             textAreas.forEach(textArea => {
+            //                 createNewTextarea(textArea.value);
+            //             });
+
+            //             $(".save-title").data("currentTitle", title); // 現在のタイトルを設定
+            //             alert("データが復元されました");
+            //         } catch (e) {
+            //             console.error("Failed to parse saved data:", e);
+            //             alert("データの読み込みに失敗しました。");
+            //         }
+            //     } else {
+            //         alert("保存されたデータが見つかりません。");
+            //     }
+            // });
+
+            // function saveData(title) {
+            //     let textAreas = [];
+            //     $(".t-area").each(function () {
+            //         let textAreaObj = {
+            //             id: $(this).attr("id"),
+            //             value: $(this).val()
+            //         };
+            //         textAreas.push(textAreaObj);
+            //     });
+
+            //     let dataToSave = {
+            //         title: title,
+            //         textAreas: textAreas
+            //     };
+
+            //     localStorage.setItem(title, JSON.stringify(dataToSave));
+            //     $(".save-title").data("currentTitle", title); // 現在のタイトルを保存
+            // }
+
+
+        // 初回実行
+        // applyLocalStorageValues();
+
         // 最初のテキストエリアに対するイベントハンドラを追加
         $("#text1").on("input", function () {
             let text = $(this).val();
@@ -736,9 +810,114 @@ $(document).on("click", ".load-title", async function () {
                 createNewTextarea('');
             }
 
-            // updateView($(this));
-            // updateLocalStorage($(this));
+            updateView($(this));
+            updateLocalStorage($(this));
         });
+
+
+        // // 初回実行
+        // applyLocalStorageValues();
+
+    $(document).ready(function () {
+
+        // 初期値の設定
+        let selectedGyo = parseInt($("#gyo").val());
+        let selectedMoji = parseInt($("#moji").val());
+        let bBoxCounter = 2; // 最初のtextareaの数を設定
+
+        // ページが読み込まれたときに実行する処理
+        function applySelectedValuesFromLocalStorage() {
+            // ローカルストレージから選択された値を取得
+            const storedGyo = localStorage.getItem("selectedGyo");
+            const storedMoji = localStorage.getItem("selectedMoji");
+
+            // 取得した値があれば適用
+            if (storedGyo !== null) {
+                selectedGyo = parseInt(storedGyo);
+                $("#gyo").val(storedGyo);
+            }
+            if (storedMoji !== null) {
+                selectedMoji = parseInt(storedMoji);
+                $("#moji").val(storedMoji);
+            }
+        }
+
+        // 初回実行
+        applySelectedValuesFromLocalStorage();
+
+        // 行数と文字数の選択ボックスから選択された値を取得
+        $("#gyo").on("change", function () {
+            selectedGyo = parseInt($(this).val()); // 選択された行数を整数に変換して変数に代入
+            localStorage.setItem("selectedGyo", selectedGyo); // 選択された値をローカルストレージに保存
+        });
+
+        $("#moji").on("change", function () {
+            selectedMoji = parseInt($(this).val()); // 選択された文字数を整数に変換して変数に代入
+            localStorage.setItem("selectedMoji", selectedMoji); // 選択された値をローカルストレージに保存
+        });
+
+        // テキストエリアの追加機能の実装
+        function createNewTextarea(text) {
+            // 新しいテキストエリアを作成する処理
+            // ここに実装を追加
+        }
+
+        // テキストエリアの内容を更新するための関数
+        function updateView(textarea) {
+            let text = textarea.val();
+            let lines = text.split("\n");
+            let charCount = text.replace(/\n/g, '').length;
+            let lineCount = lines.length;
+
+            // 文字数と行数を更新する
+            $("#charCount").text("文字数: " + charCount);
+            $("#lineCount").text("行数: " + lineCount);
+
+            // 選択された行数と文字数に基づいて、テキストを修正する
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].length > selectedMoji) {
+                    lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+                }
+            }
+            if (lineCount > selectedGyo) {
+                lines = lines.slice(0, selectedGyo);
+            }
+
+            textarea.val(lines.join("\n"));
+        }
+
+        // 最初のテキストエリアに対するイベントハンドラを追加
+        $("#text1").on("input", function () {
+            let text = $(this).val();
+            let charCount = text.replace(/\n/g, '').length;
+            let lines = text.split("\n");
+            let lineCount = lines.length;
+            $("#charCount").text("文字数: " + charCount);
+            $("#lineCount").text("行数: " + lineCount);
+
+            // 文字数と行数に基づいて、テキストを修正する
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].length > selectedMoji) {
+                    lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+                }
+            }
+            if (lineCount > selectedGyo) {
+                lines = lines.slice(0, selectedGyo);
+            }
+
+            $(this).val(lines.join("\n"));
+
+            // 新しいテキストエリアを作成する条件を追加する
+            if (lineCount > selectedGyo) {
+                createNewTextarea('');
+            }
+
+            // テキストエリアのビューを更新する
+            updateView($(this));
+        });
+    });
+
+
 
 
             // サイドバー内のビュー要素がクリックされた時の処理
