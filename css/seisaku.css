@@ -618,10 +618,10 @@ body {
   align-items: center;
   position: fixed;
   top: 60%;
-  left: 10%;
-  right: 10%;
+  left: 5%;
+  right: 5%;
   transform: translate(-50%, -50%);
-  width: 320px;
+  width: 280px;
   height: auto;
   background: white;
   border: 1px solid #ccc;
