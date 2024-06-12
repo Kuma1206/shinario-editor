@@ -1,0 +1,31 @@
+ChatGPT API Key 
+sk-proj-9CW64gB5ZVJfDmnm24T4T3BlbkFJjKpDV43vcPlb4e2jc2SU
+
+curl https://api.openai.com/v1/models \
+  -H "Authorization: Bearer $sk-proj-9CW64gB5ZVJfDmnm24T4T3BlbkFJjKpDV43vcPlb4e2jc2SU" \
+  -H "OpenAI-Organization: org-7G399WmnblKKYjLsDkxX0GPM" \
+  -H "OpenAI-Project: $proj_Fn21T3kKCbEd4PwHTUqjfLxQ"
+
+
+curl https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-proj-9CW64gB5ZVJfDmnm24T4T3BlbkFJjKpDV43vcPlb4e2jc2SU
+" \
+  -d '{
+     "model": "gpt-3.5-turbo",
+     "messages": [{"role": "user", "content": "Say this is a test!"}],
+     "temperature": 0.7
+   }'
+
+
+
+6/10
+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
+
+
+
+firabase api Key
+        // apiKey: "AIzaSyC4wOcc9eussYrzW-F1K_nYNE2PkqCJGZY",
+
+const apiKey = "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"; 
+

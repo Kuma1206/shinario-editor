@@ -609,20 +609,21 @@ body {
   /* カーソルをポインターに変更 */
 }
 
-
 /* ポップアップウィンドウのスタイル */
 #popup {
-  display: none; 
+  display: none;
   position: fixed;
   justify-content: center;
   align-items: center;
   position: fixed;
   top: 60%;
-  left: 5%;
-  right: 5%;
+  left: 15%;
+  right: 0%;
   transform: translate(-50%, -50%);
   width: 280px;
   height: auto;
+  max-height: 500px;
+  overflow-y: auto; /* 垂直方向のスクロールバーを表示 */
   background: white;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -638,209 +639,253 @@ body {
 
 /* ボタンのスタイル */
 .popup-header {
-    display: flex;
-    justify-content: end; /* ボタンを右寄せに変更 */
-    align-items: end; /* 垂直方向の中央揃えを追加 */
-    width: 100%;
-    /* padding: 5px; */
-    padding-right: 15px;
-    background-color: #fff;
-    /* border-bottom: 1px solid #ccc; */
+  display: flex;
+  justify-content: end; /* ボタンを右寄せに変更 */
+  align-items: end; /* 垂直方向の中央揃えを追加 */
+  width: 100%;
+  /* padding: 5px; */
+  padding-right: 15px;
+  background-color: #fff;
+  /* border-bottom: 1px solid #ccc; */
 }
 
 .popup-header button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    /* margin-right: 10px; */
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  /* margin-right: 10px; */
 }
 
 /* 最小化時のスタイル */
 #popup.minimized {
-    height: 20px; /* 高さを自動調整 */
-    width: 100px;
-    display: flex;
-    justify-content: start;
-    /* flex-direction: column; */
-    overflow: hidden;
-    padding-left: 10px;
-    margin: 0;
+  height: 20px; /* 高さを自動調整 */
+  width: 100px;
+  display: flex;
+  justify-content: start;
+  /* flex-direction: column; */
+  overflow: hidden;
+  padding-left: 10px;
+  margin: 0;
 }
 
-
 #popup.minimized .popup-header {
-    display: flex;
-    justify-content: start;
-    height: 20px;
-    display: flex; /* ヘッダーを表示 */
+  display: flex;
+  justify-content: start;
+  height: 20px;
+  display: flex; /* ヘッダーを表示 */
 }
 
 #popup.minimized .popup-header button {
-    display: flex;
-    justify-content: start;
-    display: flex; /* ヘッダーを表示 */
-    padding-left: 10px;
+  display: flex;
+  justify-content: start;
+  display: flex; /* ヘッダーを表示 */
+  padding-left: 10px;
 }
-
 
 #close {
-    font-size: 30px;
-    color: rgb(3, 3, 3);
-    font-size: 30px;
-    padding: 0px;
-    border-radius: 0%;
-    /* background-color: #ffcccc; */
-    transition: background-color 0.3s ease;
+  font-size: 30px;
+  color: rgb(3, 3, 3);
+  font-size: 30px;
+  padding: 0px;
+  border-radius: 0%;
+  /* background-color: #ffcccc; */
+  transition: background-color 0.3s ease;
 }
 
-
 .b-chat {
-    display: flex;
-    justify-content: center;
-    padding-left: 5px;
-    padding-right: 5px;
-    width: 8%;
-    height: 20px;
-    font-size: 20px;
+  display: flex;
+  justify-content: center;
+  padding-left: 5px;
+  padding-right: 5px;
+  width: 8%;
+  height: 20px;
+  font-size: 20px;
 }
 
 .popup-header button:hover {
-    color: red;
+  color: red;
 }
 
 #output {
-    display: flex;
-    justify-content: start;
-    flex-direction: column;
-    /* margin-left: 10px; */
-    /* margin-right: 10px; */
-    padding-left: 0px;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  /* margin-left: 10px; */
+  /* margin-right: 10px; */
+  padding-left: 0px;
 }
 
 #output li {
-    display: flex;
-    justify-content: start;
-    flex-direction: column;
-    width: auto;
-    height: auto;
-    background-color: rgb(190, 215, 236);
-    border-radius: 10px;
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    /* margin-top: 10px; */
-    /* margin-bottom: 1px; */
-    /* margin-right: 20px; */
-    font-size: 12px;
-    list-style-type: none!important;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  width: auto;
+  height: auto;
+  background-color: rgb(190, 215, 236);
+  border-radius: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 12px;
+  list-style-type: none !important;
+  overflow-y: auto; 
 }
 
-
 #s-chat {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    width: 100%;
-    /* border: 10px solid rgb(161, 160, 160); */
-    /* border-width: 2px; */
-    /* border-radius: 5px; */
-    padding: 0;
-    margin: 0;
-    /* box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.767);     */
-    z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  /* border: 10px solid rgb(161, 160, 160); */
+  /* border-width: 2px; */
+  /* border-radius: 5px; */
+  padding: 0;
+  margin: 0;
+  /* box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.767);     */
+  z-index: 999;
 }
 
 #title {
-    padding: 10px;
-    margin: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 13px;
+  padding: 10px;
+  margin: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
 }
 
 fieldset {
-    border: 0px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 10px;
-    z-index: 999;
+  border: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 10px;
+  z-index: 999;
 }
 
 #send {
-    color: rgb(68, 70, 69);
-    font-size: 20px;
-    padding-left: 5px;
+  color: rgb(68, 70, 69);
+  font-size: 20px;
+  padding-left: 5px;
 }
 
 #send:hover {
-    cursor: pointer; 
+  cursor: pointer;
 }
 
 #text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* height: 0px; */
-    width: 250px;
-    border-radius: 20px;
-    border: 1px solid rgb(161, 160, 160);
-    padding-left: 10px;
-    padding-top: 10px;
-    font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* height: 0px; */
+  width: 250px;
+  border-radius: 20px;
+  border: 1px solid rgb(161, 160, 160);
+  padding-left: 10px;
+  padding-top: 10px;
+  font-size: 12px;
   /* その他のスタイルは省略 */
-    /* min-height: 10px; 最小の高さ */
-    overflow: hidden; /* スクロールバーを非表示 */
-    resize: none;  /*ユーザーがリサイズできないようにする*/
-    white-space: pre-wrap; /*テキスト内の改行を維持
+  /* min-height: 10px; 最小の高さ */
+  overflow: hidden; /* スクロールバーを非表示 */
+  resize: none; /*ユーザーがリサイズできないようにする*/
+  white-space: pre-wrap; /*テキスト内の改行を維持
     /* z-index: 999; */
 }
 
 #text:hover {
-    height: 20px;
-    width: 250px;
-    border-radius: 20px;
-    border: 1px solid rgb(161, 160, 160);
-    padding-left: 10px;
-    z-index: 999;
+  height: 20px;
+  width: 250px;
+  border-radius: 20px;
+  border: 1px solid rgb(161, 160, 160);
+  padding-left: 10px;
+  z-index: 999;
 }
 
 #time {
-    display: flex;
-    justify-content: end;
-    flex-direction: column;
-    font-size: 10px;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  font-size: 10px;
 }
 
-#li-box {
+/* #li-box {
     display: flex;
     justify-content: start;
     flex-direction: column;
     padding-right: 10px;
-}
+} */
 
-#o-box {
+/* #o-box {
     display: flex;
     align-items: start;
     justify-content: end;
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
+} */
+
+.response-box {
+  display: flex;
+  justify-content: start;
+}
+
+.response-box #li-box {
+  padding-left: 0;
+  height: auto;
+  overflow-y: auto; 
+}
+
+.response-box #o-box {
+  width: auto;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+} 
+
+.send-box {
+  width: auto;
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  /* padding-top: 10px; */
+  /* padding-left: 10px; */
+  /* padding-right: 10px; */
+} */
+
+.send-box #li-box {
+  width: 10px;
+  padding-right: 0;
 }
 
 output {
-    width: auto;
-    display: flex;
+  width: auto;  
+  display: flex;
+}
+
+#img-box {
+  height: 100px;
+  display: flex;
+  justify-content: start;
+  padding-right: 5px;
 }
 
 img {
-    width: 30px;
-    height: 30px;
-    padding-top: 15px;
-    /* margin-top: 5px; */
+  width: 30px;
+  height: 30px;
+  padding-top: 15px;
+  /* margin-top: 5px; */
 }
 
+#p-box {
+  height: auto;
+}
+
+fieldset {
+  position: relative;
+}
