@@ -36,9 +36,6 @@ const textarea = document.getElementById("text");
 const initialHeight = 4 * parseFloat(getComputedStyle(textarea).lineHeight);
 
 const headers = {
-  Authorization: `Bearer ${apiKey}`,
-  "OpenAI-Organization": "", // あなたの組織ID
-  "OpenAI-Project": "", // あなたのプロジェクトID
 };
 
 // ChatGPTのAPI設定
