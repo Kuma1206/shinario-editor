@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shinario-editor</title>
+    <link rel="stylesheet" type="text/css" href="css/seisaku.css" />
+    <!-- <link rel="stylesheet" href="css/chat.css"> -->
+</head>
+<id="">
+
+    <header id="head">
+
+        <div id="m-room">
+            <div id="p-room">
+                <button class="save" onclick="downloadWord()">エクスポート</button>
+                <button id="save" class="save">保存</button>
+            </div>
+            <div id="n-room">
+                <div id="charCount">文字数: 0</div>
+                <div id="lineCount">行数: 0</div>
+            </div>
+            <div id="o-room">
+                <p>行数</p>
+                <select name="" id="gyo" class="p_down"></select>
+                <p>文字数/行</p>
+                <select name="" id="moji" class="p_down"></select>
+            </div>
+        </div>
+        <div id="t-heder">
+            <!-- <div id=""> -->
+                <p id="hashira" class="h-text">柱</p>
+                <p id="togaki" class="h-text">ト書き</p>
+                <p id="serihu" class="h-text">セリフ</p>
+                    <div class="menu" id="menu">
+                        <div>
+                            <div class="b-tojo"> 
+                                <p>登場人物名追加</p>
+                                <p class="j-tuika">＋</p>
+                            </div>
+                            <div class="b-men-tuika">
+                                <p class="b-men" style="display: none;">
+                                    <span class="pencil-icon">▼</span>
+                                    <input class="editable-text" placeholder="〇名前・場所（時刻）"></input>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+            <!-- </div> -->
+        
+            <!-- <div id="kfk"> -->
+                <p id="keika" class="h-text">時間経過</p>
+                <p id="flash" class="h-text">フラッシュ</p>
+                <p id="kaiso" class="h-text">回想</p>
+            <!-- </div> -->
+        
+                <p id="NA" class="h-text">ナレーション</p>
+        </div>
+    </header>
+
+
+<main id="main">
+
+        <div id="side2">
+            <div class="header-area">
+                <div class="fadeIn2 show hamburger">
+                    <!-- ハンバーガーメニューの線 -->
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <!-- /ハンバーガーメニューの線 -->
+                </div>
+            </div>
+
+            <img id="chat-image" src=".//image/chat-image.png" alt="">
+
+                <div id="overlay"></div>
+                    <div id="popup">
+                        <div class="popup-header">
+                            <button id="minimize" class="b-chat">_</button>
+                            <button id="close" class="b-chat">×</button>
+                        </div>
+                        <section id="s-chat">
+                            <div id="title">
+                                <p>脚本にアドバイスをもらおう！</p>
+                            </div>
+                            <div>       
+                                <ul id="output"></ul>
+                                <form id="form">
+                                    <fieldset>
+                                        <div><textarea id="text"></textarea></div>
+                                        <!-- <div><input type="file" id="fileInput"></div> -->
+                                        <p type="button" id="send">➤</p>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            <ul class="slide-menu">
+                <a href="http://127.0.0.1:5501/ichiran.html" target="_blank" class="k-ichiran">
+                    <p class="m-title">　脚本一覧</p>
+                </a>
+                <p class="n-title">　新規作成</p>
+                <div>
+                    <p class="new-file">＋保存File</p>
+                    <div class="s-box">
+                        <p class="save-title"></p>
+                    </div>
+                </div>
+            </ul>
+        </div>
+
+
+    <!-- <section id="t-room"> -->
+        <div id="t-box">
+            <textarea id="text1" cols="54" rows="30" wrap="soft" class="t-area focused"></textarea>
+        </div>
+    <!-- </section> -->
+
+    <section id="side1">
+    <div id="side">
+        <div id="v-box">
+            <p id="v-boxID">1</p>
+            <p id="view1" class="view"></p>
+        </div>
+    </div> 
+    </section>
+
+</main>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://kit.fontawesome.com/f8d91bc05f.js" crossorigin="anonymous"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script> -->
+<!-- <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script> -->
+<script type="module" src="js/script.js"></script>
+<script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatImage = document.getElementById('chat-image');
+            const popup = document.getElementById('popup');
+            const overlay = document.getElementById('overlay');
+
+            // 画像をクリックしたときの処理
+            chatImage.addEventListener('click', function() {
+                // ポップアップとオーバーレイを表示
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+            });
+
+            // オーバーレイをクリックしたらポップアップを閉じる
+            overlay.addEventListener('click', function() {
+                popup.style.display = 'none';
+                overlay.style.display = 'none';
+            });
+        });
+
+</script>
+
+<script>
+    // 日時をいい感じの形式にする関数
+    function convertTimestampToDatetime(timestamp) {
+    const _d = timestamp ? new Date(timestamp * 1000) : new Date();
+    const Y = _d.getFullYear();
+    const m = (_d.getMonth() + 1).toString().padStart(2, "0");
+    const d = _d.getDate().toString().padStart(2, "0");
+    const H = _d.getHours().toString().padStart(2, "0");
+    const i = _d.getMinutes().toString().padStart(2, "0");
+    const s = _d.getSeconds().toString().padStart(2, "0");
+    return `${Y}/${m}/${d} ${H}:${i}:${s}`;
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore,
+        collection,
+        addDoc,
+        serverTimestamp,
+        setDoc,
+        doc,
+        getDoc,
+        getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        authDomain: "shinario-editor.firebaseapp.com",
+        projectId: "shinario-editor",
+        storageBucket: "shinario-editor.appspot.com",
+        messagingSenderId: "169902401788",
+        appId: "1:169902401788:web:bf225c6cb794efa4f04f79"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let bBoxCounter = 1; // 初期値を2に設定
+
+    // テキストエリアを動的に作成する関数
+    function createNewTextarea(text = '') {
+        let $newTextarea = $("<textarea>").attr({
+            id: "text" + bBoxCounter,
+            cols: "54",
+            rows: "30",
+            wrap: "soft",
+            class: "t-area"
+        }).val(text).on('input', function () {
+            handleTextareaInput($(this));
+        });
+
+        // 新しいviewを作成
+        let $newView = $("<p>").attr({
+            id: "view" + bBoxCounter
+        }).addClass("view").text(text);
+
+        // 新しいb-boxIDを作成
+        let $newBBoxID = $("<p>").attr({
+            id: "v-boxID" + bBoxCounter
+        }).text(bBoxCounter);
+
+        // t-boxに新しいtextareaを追加
+        $("#t-box").append($newTextarea);
+
+        // v-boxに新しいviewとb-boxIDを追加
+        $("#v-box").append($newBBoxID);
+        $("#v-box").append($newView);
+
+        // 新しいtextareaの表示
+        $newTextarea.show();
+        $newTextarea.addClass("focused");
+
+        // text1のフォーカスを解除
+        $("#text1").removeClass("focused");
+
+        // 新しいtextareaにフォーカスを移動
+        $newTextarea.focus();
+
+        // 新しいtextareaでバックスペースを押した時に直前のtextareaにフォーカスを戻す処理
+        $newTextarea.on("keydown", function (e) {
+            handleBackspaceKey($(this), e);
+        });
+
+        bBoxCounter++;
+    }
+
+    function handleTextareaInput($textarea) {
+        let text = $textarea.val();
+        let charCount = text.replace(/\n/g, '').length;
+        let lines = text.split("\n");
+        let lineCount = lines.length;
+        $("#charCount").text("文字数: " + charCount);
+        $("#lineCount").text("行数: " + lineCount);
+
+        let viewText = text.replace(/\n/g, '<br>');
+        $("#view" + $textarea.attr("id").substr(4)).html(viewText);
+
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].trim().length === 0) continue;
+            if (lines[i].length > selectedMoji) {
+                lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+            }
+        }
+
+        $textarea.val(lines.join('\n'));
+
+        if (lineCount > selectedGyo) {
+            lines = lines.slice(0, selectedGyo);
+        }
+
+        $textarea.val(lines.join("\n"));
+
+        if (lineCount > selectedGyo) {
+            createNewTextarea('');
+        }
+
+        $("#view" + $textarea.attr("id").substr(4)).text($textarea.val());
+    }
+
+    function handleBackspaceKey($textarea, e) {
+        if (e.which === 8 && $textarea.val() === "") {
+            e.preventDefault();
+            let $prevTextarea = $textarea.prevAll("textarea:first");
+            if ($prevTextarea.length > 0) {
+                $prevTextarea.addClass("focused");
+                $prevTextarea.focus();
+                $textarea.hide();
+                $textarea.removeClass("focused");
+
+                let viewID = "view" + $textarea.attr("id").substr(4);
+                $("#" + viewID).hide();
+
+                let bBoxID = "v-boxID" + $textarea.attr("id").substr(4);
+                $("#" + bBoxID).hide();
+
+                bBoxCounter--;
+                $textarea.remove();
+                $("#" + viewID).remove();
+                $("#" + bBoxID).remove();
+
+                if ($("#t-box .t-area").length <= 1) {
+                    $("#text1").addClass("focused");
+                }
+            }
+        }
+    }
+
+    async function saveData(title, textArray) {
+        let data = {
+            title: title,
+            time: serverTimestamp()
+        };
+        textArray.forEach((text, index) => {
+            data[`text${index + 1}`] = text;
+        });
+
+        await setDoc(doc(collection(db, "save"), title), data);
+    }
+
+
+async function loadData(title) {
+    const docRef = doc(db, "save", title);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        let textareaCount = 0;
+
+            bBoxCounter = 1;
+            // すべてのテキストエリアと view を非表示にする
+            $(".t-area").remove();
+            $(".view").remove();
+
+            // v-boxIDをリセット
+            $("#v-box").empty();
+
+            // 新しい空のテキストエリアを作成し、最初のテキストエリアとして表示する
+            createNewTextarea('');
+
+        // textフィールドの数を確認し、必要な数のテキストエリアを生成する
+        for (let key in data) {
+            if (key.startsWith("text")) {
+                textareaCount++;
+            }
+        }
+
+        // 必要な数のテキストエリアを生成
+        for (let i = 1; i <= textareaCount; i++) {
+            if ($(`#text${i}`).length === 0) {
+                createNewTextarea("");
+            }
+        }
+
+        // データを復元
+        for (let key in data) {
+            if (key.startsWith("text")) {
+                $(`#${key}`).val(data[key]);
+                $(`#view${key.substr(4)}`).html(data[key].replace(/\n/g, '<br>'));
+            }
+        }
+
+    // 空白のテキストエリアと対応するビュー、v-boxIDを削除する
+    $(".t-area").each(function() {
+        if ($(this).val().trim() === '') {
+            const textareaID = $(this).attr('id');
+            $(this).remove();
+            $(`#view${textareaID.substr(4)}`).remove();
+            $(`#v-boxID${textareaID.substr(4)}`).remove(); // v-boxIDを削除
+        }
+    });
+
+        
+        // テキストエリアカウンターを更新
+        if (textareaCount >= bBoxCounter) {
+            bBoxCounter = textareaCount + 1;
+        }
+
+        alert("データを復元しました");
+    } else {
+        alert("復元したデータが見つかりません");
+    }
+}
+
+
+$(document).on("click", ".load-title", async function () {
+    let title = $(this).data("title");
+
+            bBoxCounter = 1;
+            // すべてのテキストエリアと view を非表示にする
+            $(".t-area").remove();
+            $(".view").remove();
+
+            // v-boxIDをリセット
+            $("#v-box").empty();
+
+            // 新しい空のテキストエリアを作成し、最初のテキストエリアとして表示する
+            createNewTextarea('');    
+
+    // 新たにデータを復元する
+    await loadData(title);
+
+    // 空白のテキストエリアと対応するビュー、v-boxIDを削除する
+    $(".t-area").each(function() {
+        if ($(this).val().trim() === '') {
+            const textareaID = $(this).attr('id');
+            $(this).remove();
+            $(`#view${textareaID.substr(4)}`).remove();
+            $(`#v-boxID${textareaID.substr(4)}`).remove(); // v-boxIDを削除
+        }
+    });
+
+        
+});
+
+    $(document).ready(function() {
+        $("#save").on("click", async function () {
+            let title = prompt("タイトルを入力してください:");
+            if (title) {
+                let textArray = [];
+                $(".t-area").each(function(index, element) {
+                    let text = $(element).val();
+                    textArray.push(text);
+                });
+
+                await saveData(title, textArray);
+
+                alert("保存しました");
+
+                $(".save-title").append('<div><a href="#" class="load-title" data-title="' + title + '">' + title + '</a></div>');
+            } else {
+                alert("タイトルを入力してください。");
+            }
+        });
+
+
+        async function loadTitles() {
+            const querySnapshot = await getDocs(collection(db, "save"));
+            const titles = new Set();
+
+            querySnapshot.forEach(doc => {
+                const docData = doc.data();
+                titles.add(docData.title);
+            });
+
+            titles.forEach(title => {
+                $(".save-title").append('<div><a href="#" class="load-title" data-title="' + title + '">' + title + '</a></div>');
+            });
+        }
+
+        loadTitles();
+    });
+
+    $(document).on("keydown", "textarea", function (e) {
+        if (e.which === 37) {
+            if (this.selectionEnd === this.value.length) {
+                let $nextTextarea = $(this).nextAll("textarea:first");
+                if ($nextTextarea.length > 0) {
+                    $nextTextarea.addClass("focused");
+                    $nextTextarea.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+        if (e.which === 39) {
+            if (this.selectionStart === 0) {
+                let $prevTextarea = $(this).prevAll("textarea:first");
+                if ($prevTextarea.length > 0) {
+                    $prevTextarea.addClass("focused");
+                    $prevTextarea.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+    });
+</script>
+
+
+
+<script>
+
+
+    // 保存Fileをクリックした時の処理
+    $(".new-file").click(function () {
+        // save-titleの表示・非表示を切り替える
+        $(".save-title").toggle();
+    });
+
+    // jQueryを使って編集可能なテキストにする
+
+    $('.pencil-icon').click(function () {
+        var textElement = $(this).next('.editable-text');
+        textElement.attr('contenteditable', 'true').focus().addClass('editing');
+
+        // フォーカスが外れたら編集を終了
+        textElement.blur(function () {
+            $(this).attr('contenteditable', 'false').removeClass('editing');
+        });
+    });
+
+    $('#side1').appendTo('#main');
+
+
+    // テキストエリアがクリックされた時の処理
+    $("#text1").click(function () {
+        $(this).addClass("focused");
+    });
+
+    // textareaの内容が変更されたら
+    $("#text1").on("input", function () {
+        // textareaの内容を取得してview1に表示
+        $("#view1").text($(this).val());
+    });
+
+    $('.hamburger').click(function () {
+        $('.hamburger, .slide-menu').toggleClass('active');
+    });
+    
+
+
+    // 選択されたオプションのキーを定義
+    const selectedGyoKey = 'selectedGyo';
+    const selectedMojiKey = 'selectedMoji';
+
+    // ページが読み込まれたときに実行される処理
+    $(window).on('load', function () {
+        // ローカルストレージから選択されたオプションを取得
+        const selectedGyo = localStorage.getItem(selectedGyoKey);
+        const selectedMoji = localStorage.getItem(selectedMojiKey);
+
+        // 選択されたオプションを適用
+        if (selectedGyo) {
+            $('#gyo').val(selectedGyo);
+        }
+        if (selectedMoji) {
+            $('#moji').val(selectedMoji);
+        }
+
+        // オプションが変更されたときに実行される処理
+        $('#gyo').on('change', function () {
+            // 選択されたオプションを取得してローカルストレージに保存
+            const selectedValue = $(this).val();
+            localStorage.setItem(selectedGyoKey, selectedValue);
+        });
+
+        $('#moji').on('change', function () {
+            // 選択されたオプションを取得してローカルストレージに保存
+            const selectedValue = $(this).val();
+            localStorage.setItem(selectedMojiKey, selectedValue);
+        });
+    });
+    
+
+        let bBoxCounter = 2; // 最初のtextareaの数を設定
+
+        function downloadWord() {
+            // テキストエリアの内容を取得
+            var text = document.getElementById('text1').value;
+
+            // Blobオブジェクトを作成
+            var blob = new Blob([text], { type: 'application/msword' });
+
+            // a要素を作成
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+
+            // ダウンロード時のファイル名を設定
+            var filename = 'document.doc';
+            a.download = filename;
+
+            // ダウンロードリンクをクリックしてファイルをダウンロード
+            a.click();
+        }
+
+        //行数と文字数を代入
+        function selectBoxCreate(start, end) {
+            let str = "<option value=''>--</option>";
+            for (let i = start; i < end; i++) {
+                str += `<option>${i}</option>`;
+            }
+            return str;
+        }
+        const gyo = selectBoxCreate(5, 41);
+        const moji = selectBoxCreate(20, 51);
+
+        $("#gyo").html(gyo);
+        $("#moji").html(moji);
+
+
+        // 初期値の設定
+        let selectedGyo = parseInt($("#gyo").val());
+        let selectedMoji = parseInt($("#moji").val());
+
+        // ページが読み込まれたときに実行する処理
+        function applySelectedValuesFromLocalStorage() {
+            // ローカルストレージから選択された値を取得
+            const storedGyo = localStorage.getItem("selectedGyo");
+            const storedMoji = localStorage.getItem("selectedMoji");
+
+            // 取得した値があれば適用
+            if (storedGyo !== null) {
+                selectedGyo = parseInt(storedGyo);
+                $("#gyo").val(storedGyo);
+            }
+            if (storedMoji !== null) {
+                selectedMoji = parseInt(storedMoji);
+                $("#moji").val(storedMoji);
+            }
+        }
+
+        // 初回実行
+        applySelectedValuesFromLocalStorage();
+
+        // 行数と文字数の選択ボックスから選択された値を取得
+        $("#gyo").on("change", function () {
+            selectedGyo = parseInt($(this).val()); // 選択された行数を整数に変換して変数に代入
+            localStorage.setItem("selectedGyo", selectedGyo); // 選択された値をローカルストレージに保存
+        });
+
+        $("#moji").on("change", function () {
+            selectedMoji = parseInt($(this).val()); // 選択された文字数を整数に変換して変数に代入
+            localStorage.setItem("selectedMoji", selectedMoji); // 選択された値をローカルストレージに保存
+        });
+
+
+
+        $(".n-title").click(function () {
+            bBoxCounter = 1;
+            // すべてのテキストエリアと view を非表示にする
+            $(".t-area").remove();
+            $(".view").remove();
+
+            // v-boxIDをリセット
+            $("#v-box").empty();
+
+            // 新しい空のテキストエリアを作成し、最初のテキストエリアとして表示する
+            createNewTextarea('');
+        });
+
+
+        function createNewTextarea(text) {
+            // let bBoxCounter = 2; 
+            // 新しいtextareaを作成
+            let $newTextarea = $("<textarea>").attr({
+                id: "text" + bBoxCounter,
+                cols: "54",
+                rows: "30",
+                wrap: "soft",
+                class: "t-area"
+            }).val(text).on('input', function () {
+                let text = $(this).val();
+                let charCount = text.replace(/\n/g, '').length;
+                let lines = text.split("\n");
+                let lineCount = lines.length;
+                $("#charCount").text("文字数: " + charCount);
+                $("#lineCount").text("行数: " + lineCount);
+
+                // viewに改行を反映するため、改行文字を<br>に変換
+                let viewText = text.replace(/\n/g, '<br>');
+                $("#view" + $newTextarea.attr("id").substr(4)).html(viewText);
+
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].trim().length === 0) {
+                        continue;
+                    }
+                    if (lines[i].length > selectedMoji) {
+                        lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+                    }
+                }
+                $(this).val(lines.join('\n'));
+
+                if (lineCount > selectedGyo) {
+                    lines = lines.slice(0, selectedGyo);
+                }
+
+                $(this).val(lines.join("\n"));
+
+                if (lineCount > selectedGyo) {
+                    createNewTextarea('');
+                }
+
+                $("#view" + $newTextarea.attr("id").substr(4)).text($(this).val());
+
+                $(document).on("keydown", "textarea", function (e) {
+                    if (e.which === 37) { // 左矢印キーの場合
+                        // カーソルがテキストの最後にある場合は、直後のtextareaにフォーカスを移動します
+                        if (this.selectionEnd === this.value.length) {
+                            let $nextTextarea = $(this).nextAll("textarea:first");
+                            if ($nextTextarea.length > 0) {
+                                $nextTextarea.addClass("focused");
+                                $nextTextarea.focus();
+                                e.preventDefault(); // デフォルトの動作を防止
+                            }
+                        }
+                    }
+                    if (e.which === 39) { // 右矢印キーの場合
+                        // カーソルがテキストの先頭にある場合は、直前のtextareaにフォーカスを移動します
+                        if (this.selectionStart === 0) {
+                            let $prevTextarea = $(this).prevAll("textarea:first");
+                            if ($prevTextarea.length > 0) {
+                                $prevTextarea.addClass("focused");
+                                $prevTextarea.focus();
+                                e.preventDefault(); // デフォルトの動作を防止
+                            }
+                        }
+                    }
+                });
+
+
+            });
+
+            // 新しいviewを作成
+            let $newView = $("<p>").attr({
+                id: "view" + bBoxCounter
+            }).addClass("view").text(text);
+
+            // 新しいb-boxIDを作成
+            let $newBBoxID = $("<p>").attr({
+                id: "v-boxID" + bBoxCounter
+            }).text(bBoxCounter);
+
+            // t-boxに新しいtextareaを追加
+            $("#t-box").append($newTextarea);
+
+            // v-boxに新しいviewとb-boxIDを追加
+            $("#v-box").append($newBBoxID);
+            $("#v-box").append($newView);
+
+            $newTextarea.show();
+            $newTextarea.addClass("focused");
+
+            $("#text1").removeClass("focused");
+
+            $newTextarea.focus();
+
+            $newTextarea.on("keydown", function (e) {
+                if (e.which === 8 && $(this).val() === "") {
+                    e.preventDefault();
+                    let $prevTextarea = $(this).prevAll("textarea:first");
+                    if ($prevTextarea.length > 0) {
+                        $prevTextarea.addClass("focused");
+                        $prevTextarea.focus();
+                        $(this).hide();
+                        $(this).removeClass("focused");
+                        $newView.hide();
+                        $newBBoxID.hide();
+                        bBoxCounter--;
+                        $(this).remove();
+                        $newView.remove();
+                        $newBBoxID.remove();
+                        if ($("#t-box .t-area").length <= 1) {
+                            $("#text1").addClass("focused");
+                        }
+                    }
+                }
+            });
+
+            bBoxCounter++;
+        }
+
+
+
+        // 最初のテキストエリアに対するイベントハンドラを追加
+        $("#text1").on("input", function () {
+            let text = $(this).val();
+            let charCount = text.replace(/\n/g, '').length;
+            let lines = text.split("\n");
+            let lineCount = lines.length;
+            $("#charCount").text("文字数: " + charCount);
+            $("#lineCount").text("行数: " + lineCount);
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].length > selectedMoji) {
+                    lines[i] = lines[i].substring(0, selectedMoji) + "\n" + lines[i].substring(selectedMoji);
+                }
+            }
+            if (lineCount > selectedGyo) {
+                lines = lines.slice(0, selectedGyo);
+            }
+
+            $(this).val(lines.join("\n"));
+
+            if (lineCount > selectedGyo) {
+                createNewTextarea('');
+            }
+
+            // updateView($(this));
+            // updateLocalStorage($(this));
+        });
+
+
+            // サイドバー内のビュー要素がクリックされた時の処理
+            $('#side').on('click', '.view', function () {
+                // クリックされたビューのIDを取得
+                var viewId = $(this).attr('id');
+
+                // テキストエリアのIDはビューのIDから'view'を削除して'text'に変更する
+                var textareaId = viewId.replace('view', 'text');
+
+                // 対応するテキストエリアを取得し、そのテキストエリアにフォーカスを移動
+                $('#' + textareaId).focus();
+            });
+
+            // サイドバー内のカーソル要素がクリックされた時の処理
+            $('#side').on('click', '.cursor', function () {
+                // クリックされたカーソル要素の親要素のスクロール位置を取得
+                var scrollTop = $('#side').scrollTop(); // 修正箇所
+
+                // カーソルの方向に応じてスクロールする量を決定
+                var scrollAmount = ($(this).hasClass('up') ? -50 : 50);
+
+                // スクロール位置を調整して更新
+                $('#side').scrollTop(scrollTop + scrollAmount);
+            });
+
+
+
+    // すべてのテキストエリアにフォーカスイベントを追加
+    $(document).on('focus', 'textarea', function() {
+        // フォーカスされたテキストエリアに 'focused' クラスを追加
+        $('textarea').removeClass('focused');
+        $(this).addClass('focused');
+        $focusedTextArea = $(this); // フォーカスされたテキストエリアをグローバル変数に設定
+    });
+
+            // 各ボタンのクリックイベントをまとめる
+            $(document).on('click', '#hashira, #togaki, #flash, #keika, #kaiso, #NA', function () {
+                let $focusedTextArea = $('textarea.focused');
+
+                // フォーカスされたテキストエリアが存在するか確認
+                if ($focusedTextArea.length > 0) {
+                    let $textArea = $focusedTextArea.eq(0); // フォーカスされた最初のテキストエリアを取得
+                    let startPos = $textArea[0].selectionStart; // カーソルの開始位置を取得
+                    let endPos = $textArea[0].selectionEnd; // カーソルの終了位置を取得
+                    let text = $textArea.val();
+                    let newText = "";
+
+                    // 各ボタンによって挿入する文字列を変更
+                    if ($(this).attr('id') === 'hashira') {
+                        newText = text.substring(0, startPos) + "〇場所（時間）" + text.substring(endPos, text.length);
+                    } else if ($(this).attr('id') === 'togaki') {
+                        newText = text.substring(0, startPos) + "　　　" + text.substring(endPos, text.length);
+                    } else if ($(this).attr('id') === 'flash') {
+                        newText = text.substring(0, startPos) + "　　　×　　×　　×（フラッシュ）\n" + text.substring(endPos, text.length);
+                    } else if ($(this).attr('id') === 'keika') {
+                        newText = text.substring(0, startPos) + "　　　×　　×　　×\n" + text.substring(endPos, text.length);
+                    } else if ($(this).attr('id') === 'kaiso') {
+                        newText = text.substring(0, startPos) + "〇回想・場所（時期・時間）\n\n　　　回想終わり。" + text.substring(endPos, text.length);
+                    } else if ($(this).attr('id') === 'NA') {
+                        newText = text.substring(0, startPos) + "〇名前NA『』" + text.substring(endPos, text.length);
+                    }
+
+                    // 文字列を挿入
+                    $textArea.val(newText);
+
+                    // テキストエリアにフォーカスを戻す
+                    $textArea[0].focus();
+
+                }
+            });
+
+
+        // セリフをクリックしたときの処理
+        $('#serihu').click(function () {
+            // メニューの表示を切り替える
+            $('#menu').toggle();
+            // メニューの表示を切り替えた後にフォーカスを戻す
+            if ($focusedTextArea.length > 0) {
+                $focusedTextArea.focus();
+            }
+        });
+
+        // #main をクリックしたときの処理
+        $('#main').on('click', function (event) {
+            if (!$(event.target).closest('#menu').length) {
+                // メニュー以外をクリックした場合、メニューを非表示にする
+                $('#menu').hide();
+                // メニューを非表示にした後にフォーカスを戻す
+            }
+        });
+
+   
+    $(document).on('click', '.pencil-icon', function () {
+        // editable-text に入力された文字列を取得
+        let insertText = $(this).siblings('.editable-text').val();
+        // フォーカスされたテキストエリアに挿入する
+        let $focusedTextArea = $('textarea.focused');
+        if ($focusedTextArea.length > 0) {
+            let $textArea = $focusedTextArea.eq(0); // フォーカスされた最初のテキストエリアを取得
+            let startPos = $textArea[0].selectionStart; // カーソルの開始位置を取得
+            let endPos = $textArea[0].selectionEnd; // カーソルの終了位置を取得
+            let text = $textArea.val();
+            let newText = text.substring(0, startPos) + insertText + text.substring(endPos, text.length);
+
+            // 文字列を挿入
+            $textArea.val(newText);
+
+            // テキストエリアにフォーカスを戻す
+            $textArea[0].focus();
+        }
+    });
+
+     // j-tuika をクリックしたときの処理
+        $('.j-tuika').click(function () {
+            // 新しい b-men 要素を作成
+            var $newBmen = $('<p class="b-men">' +
+                '<span class="pencil-icon">▼</span>' +
+                '<input class="editable-text" placeholder="〇名前・場所（時刻）"></input>' + '</p>');
+
+            // b-tojo の直後に追加する
+            $('.b-tojo').after($newBmen);
+        });
+
+
+        
+</script>
+
+
+</body>
+
+</html>
